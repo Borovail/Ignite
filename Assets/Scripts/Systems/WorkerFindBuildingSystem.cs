@@ -10,18 +10,19 @@ namespace Assets.Scripts
     {
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (mover, transform) in SystemAPI.Query<RefRW<Mover>, RefRO<LocalTransform>>().WithAll<Selected, Worker>())
+            foreach (var (mover, transform,worker) in SystemAPI.Query<RefRW<Mover>, RefRO<LocalTransform>,RefRW<Worker>>().WithAll<Selected>())
             {
                 var closestBuildingPosition = float3.zero;
                 var minDistance = float.MaxValue;
 
-                foreach (var buildingTransform in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<Selected,Building>())
+                foreach (var (buildingTransform,entity) in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<Selected,Building>().WithEntityAccess())
                 {
                     float distance = math.distance(transform.ValueRO.Position, buildingTransform.ValueRO.Position);
 
                     if (!(distance < minDistance)) continue;
                     minDistance = distance;
                     closestBuildingPosition = buildingTransform.ValueRO.Position;
+                    worker.ValueRW.Building = entity;
                 }
 
                 mover.ValueRW.TargetPosition = closestBuildingPosition;

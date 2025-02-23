@@ -4,8 +4,6 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
-using Plane = UnityEngine.Plane;
 
 namespace Assets.Scripts
 {
@@ -62,7 +60,7 @@ namespace Assets.Scripts
                         SystemAPI.SetComponentEnabled<Selected>(hit.Entity, !selectedBool);
                         SystemAPI.GetComponentRW<LocalTransform>(selected.ValueRW.SelectedVisual).ValueRW.Scale =
                             selectedBool ? 0 : 1;
-                        if(selectedBool) 
+                        if (selectedBool && SystemAPI.HasComponent<Mover>(hit.Entity))
                             SystemAPI.GetComponentRW<Mover>(hit.Entity).ValueRW.TargetPosition = float3.zero;
                     }
                 }
