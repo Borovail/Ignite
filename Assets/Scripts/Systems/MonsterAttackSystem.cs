@@ -14,7 +14,6 @@ namespace Assets.Scripts
                 if (!(math.distance(mover.ValueRO.TargetPosition, transform.ValueRO.Position) < 1.5f)) continue;
                 if (!SystemAPI.Exists(monster.ValueRO.Building)) continue;
 
-
                 var health = SystemAPI.GetComponentRW<Health>(monster.ValueRO.Building);
                 health.ValueRW.Value -= monster.ValueRO.Damage;
                 if (health.ValueRO.Value <= 0)
