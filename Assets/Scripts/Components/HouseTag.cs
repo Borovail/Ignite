@@ -1,2 +1,2 @@
-using Unity.Entities;s
+using Unity.Entities;
 public struct HouseTag : IComponentData {}
