@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
 using Unity.Collections;
+using Game;
 
 public partial struct DestroyHouseSystem : ISystem
 {
@@ -9,9 +10,8 @@ public partial struct DestroyHouseSystem : ISystem
     {
         var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
-        foreach (var health in SystemAPI.Query<RefRO<Game.Health>>().WithEntityAccess())
+        foreach (var (health, entity) in SystemAPI.Query<RefRO<Health>>().WithEntityAccess())
         {
-            var entity = health.GetEntity();
             if (health.ValueRO.Value <= 0)
             {
                 ecb.DestroyEntity(entity);
@@ -22,5 +22,3 @@ public partial struct DestroyHouseSystem : ISystem
         ecb.Dispose();
     }
 }
-
-

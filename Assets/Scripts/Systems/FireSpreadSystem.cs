@@ -10,14 +10,13 @@ public partial struct FireSpreadSystem : ISystem
     {
         var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
-        foreach (var fire in SystemAPI.Query<RefRW<FireLevel>>().WithEntityAccess())
+        foreach (var (fire, entity) in SystemAPI.Query<RefRW<FireLevel>>().WithEntityAccess())
         {
-            var entity = fire.GetEntity();
-            fire.ValueRW.Level += 1; // Приклад логіки поширення вогню
+            fire.ValueRW.Value += 1; // Оновлено відповідно до правильної назви поля
 
-            if (fire.ValueRW.Level > 10)
+            if (fire.ValueRW.Value > 10)
             {
-                ecb.DestroyEntity(entity); // Наприклад, якщо рівень вогню перевищує 10, видаляємо сутність
+                ecb.DestroyEntity(entity); // Видаляємо сутність, якщо рівень вогню перевищує 10
             }
         }
 
