@@ -1,23 +1,26 @@
 using Unity.Burst;
 using Unity.Entities;
-using UnityEngine;
+using Unity.Transforms;
+using Unity.Collections;
 
-[BurstCompile]
 public partial struct DestroyHouseSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
-        var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+        var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
-        foreach (var (health, entity) in SystemAPI.Query<RefRO<Health>>().WithEntity())
+        foreach (var health in SystemAPI.Query<RefRO<Game.Health>>().WithEntityAccess())
         {
+            var entity = health.GetEntity();
             if (health.ValueRO.Value <= 0)
             {
                 ecb.DestroyEntity(entity);
-                Debug.Log("💀 Будинок згорів і зник!");
             }
         }
 
         ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }
+
+

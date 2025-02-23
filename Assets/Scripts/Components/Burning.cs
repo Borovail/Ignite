@@ -1,3 +1,6 @@
 using Unity.Entities;
 
-public struct Burning : IComponentData {}
+namespace Game
+{
+    public struct Burning : IComponentData { }
+}

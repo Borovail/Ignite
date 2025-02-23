@@ -1,6 +1,9 @@
 using Unity.Entities;
 
-public struct Health : IComponentData
+namespace Game
 {
-    public int Value;
+    public struct Health : IComponentData
+    {
+        public int Value;
+    }
 }

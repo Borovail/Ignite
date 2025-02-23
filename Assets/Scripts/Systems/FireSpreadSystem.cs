@@ -1,38 +1,27 @@
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
-using Unity.Mathematics;
-using UnityEngine;
+using Unity.Collections;
+using Game;
 
-[BurstCompile]
 public partial struct FireSpreadSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
-        var ecb = new EntityCommandBuffer(Allocator.Temp);
-        
-        foreach (var (fire, housePos, entity) in SystemAPI.Query<RefRO<FireLevel>, RefRO<LocalTransform>>().WithAll<Burning>().WithEntity())
+        var ecb = new EntityCommandBuffer(Allocator.TempJob);
+
+        foreach (var fire in SystemAPI.Query<RefRW<FireLevel>>().WithEntityAccess())
         {
-            if (fire.ValueRO.Value < 100) continue; 
+            var entity = fire.GetEntity();
+            fire.ValueRW.Level += 1; // Приклад логіки поширення вогню
 
-            foreach (var (neighborFire, neighborPos, neighborEntity) in SystemAPI.Query<RefRW<FireLevel>, RefRO<LocalTransform>>().WithAll<HouseTag>().WithEntity())
+            if (fire.ValueRW.Level > 10)
             {
-                if (neighborEntity == entity) continue; 
-
-                float distance = math.distance(housePos.ValueRO.Position, neighborPos.ValueRO.Position);
-                if (distance < 5f) 
-                {
-                    if (neighborFire.ValueRO.Value == 0) 
-                    {
-                        neighborFire.ValueRW.Value = 10; 
-                        ecb.AddComponent<Burning>(neighborEntity);
-                        Debug.Log("🔥 Вогонь поширився на сусідній будинок!");
-                    }
-                }
+                ecb.DestroyEntity(entity); // Наприклад, якщо рівень вогню перевищує 10, видаляємо сутність
             }
         }
 
         ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }

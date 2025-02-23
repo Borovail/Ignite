@@ -1,2 +1,6 @@
 using Unity.Entities;
-public struct HouseTag : IComponentData {}
+
+namespace Game
+{
+    public struct HouseTag : IComponentData { }
+}

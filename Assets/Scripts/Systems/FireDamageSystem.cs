@@ -2,26 +2,28 @@ using Unity.Burst;
 using Unity.Entities;
 using UnityEngine;
 
-[BurstCompile]
-public partial struct FireDamageSystem : ISystem
+namespace Game
 {
-    public void OnUpdate(ref SystemState state)
+    public partial struct FireDamageSystem : ISystem
     {
-        foreach (var (health, fire) in SystemAPI.Query<RefRW<Health>, RefRW<FireLevel>>().WithAll<Burning>())
+        public void OnUpdate(ref SystemState state)
         {
-            if (fire.ValueRO.Value > 0)
+            foreach (var (health, fire) in SystemAPI.Query<RefRW<Health>, RefRW<FireLevel>>().WithAll<Burning>())
             {
-                health.ValueRW.Value -= 1;
-                fire.ValueRW.Value += 1; 
-
-                if (fire.ValueRO.Value >= 100)
+                if (fire.ValueRO.Value > 0)
                 {
-                    Debug.Log("🔥 Будинок у максимальному вогні!");
-                }
+                    health.ValueRW.Value -= 1;
+                    fire.ValueRW.Value += 1;
 
-                if (health.ValueRO.Value <= 0)
-                {
-                    Debug.Log("💥 Будинок згорів!");
+                    if (fire.ValueRO.Value >= 100)
+                    {
+                        Debug.Log("🔥 Будинок у максимальному вогні!");
+                    }
+
+                    if (health.ValueRO.Value <= 0)
+                    {
+                        Debug.Log("💥 Будинок згорів!");
+                    }
                 }
             }
         }
