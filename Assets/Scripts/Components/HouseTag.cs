@@ -1,2 +1,7 @@
-using Unity.Entities;s
-public struct HouseTag : IComponentData {}
+using Unity.Entities;
+
+namespace Game
+{
+
+    public struct HouseTag : IComponentData { }
+}

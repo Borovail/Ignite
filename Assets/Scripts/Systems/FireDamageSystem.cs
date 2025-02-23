@@ -1,16 +1,21 @@
 using Unity.Burst;
 using Unity.Entities;
 
-[BurstCompile]
-public partial struct FireDamageSystem : ISystem
+namespace Game
 {
-    public void OnUpdate(ref SystemState state)
+
+
+    [BurstCompile]
+    public partial struct FireDamageSystem : ISystem // 
     {
-        foreach (var (health, fire) in SystemAPI.Query<RefRW<Health>, RefRO<FireLevel>>().WithAll<HouseTag>())
+        public void OnUpdate(ref SystemState state)
         {
-            if (fire.ValueRO.Value > 0)
+            foreach (var (health, fire) in SystemAPI.Query<RefRW<Health>, RefRO<FireLevel>>().WithAll<HouseTag>())
             {
-                health.ValueRW.Value -= fire.ValueRO.Value; 
+                if (fire.ValueRO.Value > 0)
+                {
+                    health.ValueRW.Value -= fire.ValueRO.Value;
+                }
             }
         }
     }

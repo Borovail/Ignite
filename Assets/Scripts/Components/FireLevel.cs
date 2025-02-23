@@ -1,6 +1,10 @@
 using Unity.Entities;
 
-public struct FireLevel : IComponentData
+namespace Game
 {
-    public int Value;
+
+    public struct FireLevel : IComponentData
+    {
+        public int Value;
+    }
 }
