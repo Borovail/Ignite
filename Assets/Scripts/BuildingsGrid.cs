@@ -1,11 +1,28 @@
+using Unity.Entities;
 using UnityEngine;
 
 public class BuildingsGrid : MonoBehaviour
 {
     public Vector2Int GridSize = new Vector2Int(10, 10);
+    public Building[] BuildingPrefabs;
     private Building[,] grid;
     private Building flyingBuilding;
     private Camera mainCamera;
+    private EntityManager entityManager;
+    private Entity[] buildingEntities;
+    private int _index;
+
+    public class Baker : Baker<BuildingsGrid>
+    {
+        public override void Bake(BuildingsGrid authoring)
+        {
+            for (int i = 0; i < authoring.BuildingPrefabs.Length; i++)
+            {
+                authoring.buildingEntities[i] = GetEntity(authoring.BuildingPrefabs[i].gameObject, TransformUsageFlags.Dynamic);
+            }
+        }
+    }
+
 
     private void Awake()
     {
@@ -13,14 +30,20 @@ public class BuildingsGrid : MonoBehaviour
         mainCamera = Camera.main;
     }
 
-    public void StartPlacingBuilding(Building buildingPrefab)
+    private void Start()
+    {
+        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+    }
+
+    public void StartPlacingBuilding(int index)
     {
         if (flyingBuilding != null)
         {
             Destroy(flyingBuilding.gameObject);
         }
 
-        flyingBuilding = Instantiate(buildingPrefab);
+        _index = index;
+        flyingBuilding = Instantiate(BuildingPrefabs[index]);
 
         if (flyingBuilding.GetComponentInChildren<Renderer>() == null)
         {
@@ -67,9 +90,9 @@ public class BuildingsGrid : MonoBehaviour
         {
             for (int y = 0; y < flyingBuilding.Size.y; y++)
             {
-                int gridX = placeX + x + GridSize.x; // Зсув для роботи з негативними координатами
+                int gridX = placeX + x + GridSize.x;
                 int gridY = placeY + y + GridSize.y;
-                
+
                 if (grid[gridX, gridY] != null) return true;
             }
         }
@@ -91,6 +114,10 @@ public class BuildingsGrid : MonoBehaviour
         }
 
         flyingBuilding.SetNormal();
+
+        entityManager.Instantiate(buildingEntities[_index]);
+
+        Destroy(flyingBuilding);
         flyingBuilding = null;
     }
 }
