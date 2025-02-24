@@ -24,20 +24,19 @@ namespace Assets.Scripts
 
                 if (SystemAPI.IsComponentEnabled<Burning>(worker.ValueRO.Building) && SystemAPI.IsComponentEnabled<HasWater>(entity))
                 {
-                    SystemAPI.SetComponentEnabled<Burning>(worker.ValueRO.Building, false);
+                    var fire = SystemAPI.GetComponentRW<Fire>(worker.ValueRO.Building);
+                    fire.ValueRW.FireLevel = math.max(0, fire.ValueRW.FireLevel - 1);
+                    if (fire.ValueRW.FireLevel == 0)
+                        SystemAPI.SetComponentEnabled<Burning>(worker.ValueRO.Building, false);
+
                     SystemAPI.SetComponentEnabled<HasWater>(entity, false);
                     SystemAPI.GetComponentRW<LocalTransform>(hasWater.ValueRW.WaterVisual).ValueRW.Scale = 0;
-
-                    SystemAPI.GetComponentRW<Fire>(worker.ValueRO.Building).ValueRW.FireLevel = 0;
-                    var fireBar = SystemAPI.GetComponentRW<FireBar>(worker.ValueRO.Building);
-                    SystemAPI.GetComponentRW<LocalTransform>(fireBar.ValueRW.FireBarVisual).ValueRW.Scale = 0;
-                    SystemAPI.GetComponentRW<LocalTransform>(fireBar.ValueRW.FireBarVisual).ValueRW.Scale = 0;
                 }
 
                 if (!(worker.ValueRO.RepairTimer <= 0)) continue;
 
-                SystemAPI.GetComponentRW<Health>(worker.ValueRO.Building).ValueRW.Value +=
-                    worker.ValueRO.RepairAmount;
+                var health = SystemAPI.GetComponentRW<Health>(worker.ValueRO.Building);
+                health.ValueRW.Value = math.min(health.ValueRO.Value + worker.ValueRO.RepairAmount, health.ValueRO.MaxValue);
                 worker.ValueRW.RepairTimer = worker.ValueRO.RepairCooldown;
             }
         }

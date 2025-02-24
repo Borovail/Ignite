@@ -20,7 +20,7 @@ namespace Assets.Scripts
                     SystemAPI.SetComponentEnabled<LifeTime>(monster.ValueRO.Building, true);
 
                 var fire = SystemAPI.GetComponentRW<Fire>(monster.ValueRO.Building);
-                fire.ValueRW.FireLevel += monster.ValueRO.FirePower;
+                fire.ValueRW.FireLevel = math.min(monster.ValueRO.FirePower + fire.ValueRW.FireLevel, fire.ValueRW.ThresholdToStartBurning);
                 if (fire.ValueRO.FireLevel >= fire.ValueRO.ThresholdToStartBurning)
                     SystemAPI.SetComponentEnabled<Burning>(monster.ValueRO.Building, true);
 

@@ -16,7 +16,7 @@ namespace Assets.Scripts
                 AddComponent(entity, new HealthBar
                 {
                     HealthBarParent = GetEntity(authoring.HealthBarParent, TransformUsageFlags.Dynamic),
-                    HealthBarVisual = GetEntity(authoring.HealthBarVisual, TransformUsageFlags.Dynamic)
+                    HealthBarVisual = GetEntity(authoring.HealthBarVisual, TransformUsageFlags.NonUniformScale)
                 });
             }
         }

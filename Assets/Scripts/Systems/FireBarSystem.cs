@@ -9,17 +9,22 @@ namespace Assets.Scripts
     {
         public void OnUpdate(ref SystemState state)
         {
+            var cameraForward = Camera.main == null ? Vector3.zero : Camera.main.transform.forward;
+
             foreach (var (fireBar, fire) in SystemAPI.Query<RefRW<FireBar>, RefRO<Fire>>())
             {
+                var barParentTransform = SystemAPI.GetComponentRW<LocalTransform>(fireBar.ValueRW.FireBarParent);
+
                 if (fire.ValueRO.FireLevel == 0)
                 {
-                    SystemAPI.GetComponentRW<LocalTransform>(fireBar.ValueRW.FireBarParent).ValueRW.Scale = 0;
+                    barParentTransform.ValueRW.Scale = 0;
                     continue;
                 }
+                barParentTransform.ValueRW.Scale = 1;
 
-                SystemAPI.GetComponentRW<LocalTransform>(fireBar.ValueRW.FireBarParent).ValueRW.Scale = 1;
-                var fireLevelNormalized =fire.ValueRO.FireLevel / (float)fire.ValueRO.ThresholdToStartBurning;
-                SystemAPI.GetComponentRW<LocalTransform>(fireBar.ValueRW.FireBarVisual).ValueRW.Scale = fireLevelNormalized;
+                SystemAPI.GetComponentRW<PostTransformMatrix>(fireBar.ValueRW.FireBarVisual).ValueRW.Value =
+                     float4x4.Scale(fire.ValueRO.FireLevel / (float)fire.ValueRO.ThresholdToStartBurning, 1, 1);
+
             }
         }
     }

@@ -1,5 +1,7 @@
 ﻿using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace Assets.Scripts
 {
@@ -7,17 +9,22 @@ namespace Assets.Scripts
     {
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (healthBar, health) in SystemAPI.Query<RefRW<HealthBar>, RefRO<Health>>())
+            var cameraForward = Camera.main == null ? Vector3.zero : Camera.main.transform.forward;
+
+            foreach (var (healthBar, health, transform) in SystemAPI.Query<RefRW<HealthBar>, RefRO<Health>, RefRW<LocalTransform>>())
             {
+                var barParentTransform = SystemAPI.GetComponentRW<LocalTransform>(healthBar.ValueRW.HealthBarParent);
+
                 if (health.ValueRO.Value == health.ValueRO.MaxValue)
                 {
-                    SystemAPI.GetComponentRW<LocalTransform>(healthBar.ValueRW.HealthBarParent).ValueRW.Scale = 0;
+                    barParentTransform.ValueRW.Scale = 0;
                     continue;
                 }
 
-                SystemAPI.GetComponentRW<LocalTransform>(healthBar.ValueRW.HealthBarParent).ValueRW.Scale = 1;
-                var healthNormalized = health.ValueRO.Value / health.ValueRO.MaxValue;
-                SystemAPI.GetComponentRW<LocalTransform>(healthBar.ValueRW.HealthBarVisual).ValueRW.Scale = healthNormalized;
+                barParentTransform.ValueRW.Scale = 1;
+
+                SystemAPI.GetComponentRW<PostTransformMatrix>(healthBar.ValueRW.HealthBarVisual).ValueRW.Value
+                                   = float4x4.Scale(health.ValueRO.Value / health.ValueRO.MaxValue, 1, 1);
             }
         }
     }

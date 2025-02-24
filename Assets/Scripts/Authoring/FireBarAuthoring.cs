@@ -16,7 +16,7 @@ namespace Assets.Scripts
                 AddComponent(entity, new FireBar
                 {
                     FireBarParent = GetEntity(authoring.FireBarParent, TransformUsageFlags.Dynamic),
-                    FireBarVisual = GetEntity(authoring.FireBarVisual, TransformUsageFlags.Dynamic)
+                    FireBarVisual = GetEntity(authoring.FireBarVisual, TransformUsageFlags.NonUniformScale)
                 });
             }
         }
