@@ -5,8 +5,10 @@ using UnityEngine;
 public class MoverAuthoring : MonoBehaviour
 {
     public float MaxSpeed = 5f;
+    public float Acceleration = 5f;
     public float RotationSpeed;
-    public float Acceleration = 10f;
+    public float HitStunDuration = 1f;
+
 
     public class Baker : Baker<MoverAuthoring>
     {
@@ -16,17 +18,22 @@ public class MoverAuthoring : MonoBehaviour
             {
                 MaxSpeed = authoring.MaxSpeed,
                 RotationSpeed = authoring.RotationSpeed,
-                Acceleration = authoring.Acceleration,
+                HitStunDuration = authoring.HitStunDuration,
+                HitStunTimer = authoring.HitStunDuration,
+                Acceleration = authoring.Acceleration
             });
         }
     }
 
 }
 
-public struct Mover : IComponentData
+public struct Mover : IComponentData, IEnableableComponent
 {
     public float MaxSpeed;
-    public float RotationSpeed;
     public float Acceleration;
+    public float RotationSpeed;
     public float3 TargetPosition;
+
+    public float HitStunDuration;
+    public float HitStunTimer;
 }
