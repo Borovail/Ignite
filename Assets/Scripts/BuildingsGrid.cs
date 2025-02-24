@@ -3,15 +3,13 @@ using UnityEngine;
 public class BuildingsGrid : MonoBehaviour
 {
     public Vector2Int GridSize = new Vector2Int(10, 10);
-
     private Building[,] grid;
     private Building flyingBuilding;
     private Camera mainCamera;
-    
+
     private void Awake()
     {
-        grid = new Building[GridSize.x, GridSize.y];
-        
+        grid = new Building[GridSize.x * 2, GridSize.y * 2]; // Подвоюємо розмір сітки, щоб включати негативні координати
         mainCamera = Camera.main;
     }
 
@@ -21,8 +19,13 @@ public class BuildingsGrid : MonoBehaviour
         {
             Destroy(flyingBuilding.gameObject);
         }
-        
+
         flyingBuilding = Instantiate(buildingPrefab);
+
+        if (flyingBuilding.GetComponentInChildren<Renderer>() == null)
+        {
+            Debug.LogError("Building prefab не містить Renderer!", flyingBuilding);
+        }
     }
 
     private void Update()
@@ -39,12 +42,7 @@ public class BuildingsGrid : MonoBehaviour
                 int x = Mathf.RoundToInt(worldPosition.x);
                 int y = Mathf.RoundToInt(worldPosition.z);
 
-                bool available = true;
-
-                if (x < 0 || x > GridSize.x - flyingBuilding.Size.x) available = false;
-                if (y < 0 || y > GridSize.y - flyingBuilding.Size.y) available = false;
-
-                if (available && IsPlaceTaken(x, y)) available = false;
+                bool available = IsPositionValid(x, y) && !IsPlaceTaken(x, y);
 
                 flyingBuilding.transform.position = new Vector3(x, 0, y);
                 flyingBuilding.SetTransparent(available);
@@ -57,13 +55,22 @@ public class BuildingsGrid : MonoBehaviour
         }
     }
 
+    private bool IsPositionValid(int x, int y)
+    {
+        return x >= -GridSize.x && x <= GridSize.x - flyingBuilding.Size.x &&
+               y >= -GridSize.y && y <= GridSize.y - flyingBuilding.Size.y;
+    }
+
     private bool IsPlaceTaken(int placeX, int placeY)
     {
         for (int x = 0; x < flyingBuilding.Size.x; x++)
         {
             for (int y = 0; y < flyingBuilding.Size.y; y++)
             {
-                if (grid[placeX + x, placeY + y] != null) return true;
+                int gridX = placeX + x + GridSize.x; // Зсув для роботи з негативними координатами
+                int gridY = placeY + y + GridSize.y;
+                
+                if (grid[gridX, gridY] != null) return true;
             }
         }
 
@@ -76,10 +83,13 @@ public class BuildingsGrid : MonoBehaviour
         {
             for (int y = 0; y < flyingBuilding.Size.y; y++)
             {
-                grid[placeX + x, placeY + y] = flyingBuilding;
+                int gridX = placeX + x + GridSize.x;
+                int gridY = placeY + y + GridSize.y;
+
+                grid[gridX, gridY] = flyingBuilding;
             }
         }
-        
+
         flyingBuilding.SetNormal();
         flyingBuilding = null;
     }
