@@ -16,11 +16,9 @@ namespace Assets.Scripts
 
                 var health = SystemAPI.GetComponentRW<Health>(monster.ValueRO.Building);
                 health.ValueRW.Value -= monster.ValueRO.Damage;
-                if (health.ValueRO.Value <= 0)
-                    SystemAPI.SetComponentEnabled<LifeTime>(monster.ValueRO.Building, true);
 
                 var fire = SystemAPI.GetComponentRW<Fire>(monster.ValueRO.Building);
-                fire.ValueRW.FireLevel = math.min(monster.ValueRO.FirePower + fire.ValueRW.FireLevel, fire.ValueRW.ThresholdToStartBurning);
+                fire.ValueRW.FireLevel = math.min(1 + fire.ValueRW.FireLevel, fire.ValueRW.ThresholdToStartBurning);
                 if (fire.ValueRO.FireLevel >= fire.ValueRO.ThresholdToStartBurning)
                     SystemAPI.SetComponentEnabled<Burning>(monster.ValueRO.Building, true);
 

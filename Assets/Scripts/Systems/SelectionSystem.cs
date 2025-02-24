@@ -38,7 +38,7 @@ namespace Assets.Scripts
                 {
                     var collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
                     var cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    var selectableLayers = 6;
+                    var selectableLayers = (1u << 6);
 
                     var raycastInput = new RaycastInput
                     {
@@ -47,7 +47,7 @@ namespace Assets.Scripts
                         Filter = new CollisionFilter
                         {
                             BelongsTo = ~0u,
-                            CollidesWith = 1u << selectableLayers,
+                            CollidesWith = selectableLayers,
                             GroupIndex = 0
                         }
                     };
@@ -62,6 +62,7 @@ namespace Assets.Scripts
                             selectedBool ? 0 : 1;
                         if (selectedBool && SystemAPI.HasComponent<Mover>(hit.Entity))
                             SystemAPI.GetComponentRW<Mover>(hit.Entity).ValueRW.TargetPosition = float3.zero;
+
                     }
                 }
             }

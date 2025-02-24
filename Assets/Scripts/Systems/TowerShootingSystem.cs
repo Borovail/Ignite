@@ -12,7 +12,7 @@ namespace Assets.Scripts
     {
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var tower in SystemAPI.Query<RefRW<Tower>>())
+            foreach (var tower in SystemAPI.Query<RefRW<DefenseTower>>())
             {
                 tower.ValueRW.LastTimeShoot -= SystemAPI.Time.DeltaTime;
                 if (tower.ValueRO.LastTimeShoot > 0 || tower.ValueRO.ShootAt.Equals(float3.zero)) continue;

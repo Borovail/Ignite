@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -17,29 +18,19 @@ namespace Assets.Scripts
                 if (!(fire.ValueRO.CooldownTimer <= 0)) continue;
 
                 health.ValueRW.Value -= fire.ValueRO.FireDamage;
-                if (health.ValueRO.Value <= 0)
+                if (health.ValueRO.Value <= 0 && SystemAPI.HasComponent<Building>(entity))
                 {
-                    SystemAPI.SetComponentEnabled<LifeTime>(entity, true);
-
-                    var minDistance = float.MaxValue;
-                    var closestBuilding = Entity.Null;
-
-                    foreach (var (buildingTransform, buildingEntity) in SystemAPI.Query<RefRO<LocalTransform>>()
-                                 .WithAll<Building>().WithDisabled<LifeTime, Burning>().WithEntityAccess())
+                    foreach (var (buildingTransform, buildingFire, buildingEntity) in SystemAPI.Query<RefRO<LocalTransform>, RefRW<Fire>>()
+                                 .WithAll<Fire>().WithDisabled<LifeTime, Burning>().WithEntityAccess())
                     {
                         float distance = math.distance(transform.ValueRO.Position, buildingTransform.ValueRO.Position);
 
-                        if (!(distance < minDistance)) continue;
-                        minDistance = distance;
-                        closestBuilding = buildingEntity;
-                    }
-
-                    if (SystemAPI.Exists(closestBuilding))
-                    {
-                        SystemAPI.SetComponentEnabled<Burning>(closestBuilding, true);
-                        Debug.Log("Burn another building");
+                        if (distance > fire.ValueRO.SpreadRadius) continue;
+                        buildingFire.ValueRW.FireLevel = buildingFire.ValueRO.ThresholdToStartBurning;
+                        SystemAPI.SetComponentEnabled<Burning>(buildingEntity, true);
                     }
                 }
+
                 fire.ValueRW.CooldownTimer = fire.ValueRO.DamageCooldown;
             }
 

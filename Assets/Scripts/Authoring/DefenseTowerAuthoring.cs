@@ -4,19 +4,19 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public class TowerAuthoring : MonoBehaviour
+    public class DefenseTowerAuthoring : MonoBehaviour
     {
         public float Cooldown;
         public float ProjectileSpeed;
         public GameObject ProjectilePrefab;
         public Transform FirePoint;
 
-        public class Baker : Baker<TowerAuthoring>
+        public class Baker : Baker<DefenseTowerAuthoring>
         {
-            public override void Bake(TowerAuthoring authoring)
+            public override void Bake(DefenseTowerAuthoring authoring)
             {
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
-                AddComponent(entity, new Tower
+                AddComponent(entity, new DefenseTower
                 {
                     Cooldown = authoring.Cooldown,
                     ProjectileSpeed = authoring.ProjectileSpeed,
@@ -27,7 +27,7 @@ namespace Assets.Scripts
         }
     }
 
-    public struct Tower : IComponentData
+    public struct DefenseTower : IComponentData
     {
         public float Cooldown;
         public float ProjectileSpeed;

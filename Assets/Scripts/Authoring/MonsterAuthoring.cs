@@ -6,7 +6,6 @@ namespace Assets.Scripts
     public class MonsterAuthoring : MonoBehaviour
     {
         public int Damage = 10;
-        public int FirePower = 1;
 
         public class Baker : Baker<MonsterAuthoring>
         {
@@ -16,7 +15,6 @@ namespace Assets.Scripts
                 AddComponent(entity,new Monster
                 {
                     Damage = authoring.Damage,
-                    FirePower = authoring.FirePower
                 });
             }
         }
@@ -26,6 +24,5 @@ namespace Assets.Scripts
     {
         public Entity Building;
         public int Damage;
-        public int FirePower;
     }
 }

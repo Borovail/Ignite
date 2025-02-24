@@ -7,6 +7,8 @@ namespace Assets.Scripts
     {
         public int RepairAmount = 1;
         public float RepairCooldown = 1;
+        public bool HasWater;
+
         public class Baker : Baker<WorkerAuthoring>
         {
             public override void Bake(WorkerAuthoring authoring)

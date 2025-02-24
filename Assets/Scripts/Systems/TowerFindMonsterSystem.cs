@@ -8,7 +8,7 @@ namespace Assets.Scripts
     {
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (transform, tower) in SystemAPI.Query<RefRO<LocalTransform>, RefRW<Tower>>())
+            foreach (var (transform, tower) in SystemAPI.Query<RefRO<LocalTransform>, RefRW<DefenseTower>>())
             {
                 var closestPosition = float3.zero;
                 var minDistance = float.MaxValue;

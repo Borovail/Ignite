@@ -32,9 +32,6 @@ namespace Assets.Scripts
                 velocity.ValueRW.Linear += impulse;
 
                 health.ValueRW.Value -= collision.ValueRO.Damage;
-
-                if (health.ValueRO.Value <= 0)
-                    SystemAPI.SetComponentEnabled<LifeTime>(entity, true);
             }
 
             foreach (var (mover, entity) in SystemAPI.Query<RefRW<Mover>>().WithDisabled<Mover, LifeTime>().WithEntityAccess())
